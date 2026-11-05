@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: debunk-api
+    runtime: docker
+    rootDir: backend
+    plan: starter            # always on; the free plan sleeps and cannot keep a disk
+    healthCheckPath: /healthz
+    disk:                    # keeps the free-plan usage counters across restarts and deploys
+      name: debunk-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - {key: LLM_PROVIDER, value: groq}
+      - {key: LLM_API_KEY, sync: false}
+      - {key: LLM_MODEL, value: "openai/gpt-oss-20b"}
+      - {key: LLM2_PROVIDER, sync: false}
+      - {key: LLM2_API_KEY, sync: false}
+      - {key: LLM2_MODEL, sync: false}
+      - {key: FACTCHECK_API_KEY, sync: false}
+      - {key: BACKEND_API_KEY, sync: false}
+      - {key: ADMIN_KEY, sync: false}
+      - {key: DISABLE_GDELT, value: "1"}
+      - {key: FREE_DAILY_LIMIT, value: "10"}
+      - {key: QUOTA_DB, value: /var/data/quota.db}

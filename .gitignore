@@ -1,0 +1,25 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+
+# secrets
+.env
+backend/.env
+local.properties
+
+# python / backend
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+*.db
+out.json
+.env.*
+!.env.example
+!local.properties.example
+
+# OS / editor
+.DS_Store
+Thumbs.db

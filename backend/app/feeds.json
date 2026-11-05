@@ -1,0 +1,14 @@
+[
+  {"name": "BBC News (World)",        "url": "https://feeds.bbci.co.uk/news/world/rss.xml",                    "kind": "news"},
+  {"name": "BBC News (India)",        "url": "https://feeds.bbci.co.uk/news/world/asia/india/rss.xml",         "kind": "news"},
+  {"name": "The Hindu (National)",    "url": "https://www.thehindu.com/news/national/feeder/default.rss",      "kind": "news"},
+  {"name": "The Hindu (International)","url": "https://www.thehindu.com/news/international/feeder/default.rss","kind": "news"},
+  {"name": "Indian Express",          "url": "https://indianexpress.com/section/india/feed/",                  "kind": "news"},
+  {"name": "NDTV",                    "url": "https://feeds.feedburner.com/ndtvnews-latest",                   "kind": "news"},
+  {"name": "Hindustan Times",         "url": "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml","kind": "news"},
+  {"name": "Times of India",          "url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",     "kind": "news"},
+  {"name": "Al Jazeera",              "url": "https://www.aljazeera.com/xml/rss/all.xml",                      "kind": "news"},
+  {"name": "The Guardian (World)",    "url": "https://www.theguardian.com/world/rss",                          "kind": "news"},
+  {"name": "PIB (Press Releases)",    "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",         "kind": "official"},
+  {"name": "WHO News",                "url": "https://www.who.int/rss-feeds/news-english.xml",                 "kind": "official"}
+]

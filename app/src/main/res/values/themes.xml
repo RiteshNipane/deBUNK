@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.Debunk" parent="android:Theme.Material.NoActionBar" />
+
+    <!-- Transparent activity so the sheet floats over whatever app the user was reading. -->
+    <style name="Theme.Debunk.Sheet" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+</resources>

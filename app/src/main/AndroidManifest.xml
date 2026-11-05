@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Floating dot + message box drawn over other apps. User grants this in system settings (onboarding step 2). -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Persistent "deBUNK is watching" notification keeps the overlay service alive. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Phase 2: sends ONLY the extracted headline-like text to the deBUNK backend. Never screenshots or full screen text. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".DebunkApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Debunk">
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Premium: what the plan includes and the upgrade button. Opened from the main screen or the daily-limit box. -->
+        <activity
+            android:name=".ui.PremiumActivity"
+            android:exported="false" />
+
+        <!-- Bottom sheet with full claim, per-source stance, dates and links. Opened from the box's Details button. -->
+        <activity
+            android:name=".ui.DetailsActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Debunk.Sheet" />
+
+        <!-- Owns the overlay windows. -->
+        <service
+            android:name=".service.OverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Hosts a floating fact-check indicator over other apps while the user has enabled deBUNK" />
+        </service>
+
+        <!-- Primary screen-text source. Reads on-screen text only to find news-like lines; see res/xml config. -->
+        <service
+            android:name=".service.DebunkAccessibilityService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+    </application>
+</manifest>

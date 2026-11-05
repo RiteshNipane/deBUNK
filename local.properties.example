@@ -1,0 +1,7 @@
+# Copy to local.properties (never commit it). Android Studio fills in sdk.dir automatically.
+# sdk.dir=C\:\\Users\\YOU\\AppData\\Local\\Android\\Sdk
+
+# Address of your deBUNK backend. Leave empty to run the app offline with simulated verdicts.
+debunk.backendUrl=https://your-server.example.com
+# Must match BACKEND_API_KEY in backend/.env
+debunk.backendKey=

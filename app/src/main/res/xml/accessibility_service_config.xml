@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Event types are limited to what scanning needs. Scans are further throttled in code (max 1 per 2 s).
+  isAccessibilityTool is deliberately NOT set: deBUNK is not an accessibility tool, and Google Play
+  restricts that flag (and this API) accordingly. See README "Play policy" before publishing.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged|typeViewScrolled"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagIncludeNotImportantViews"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="200"
+    android:description="@string/a11y_description" />

@@ -1,0 +1,306 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "deBUNK API",
+    "version": "0.3.0",
+    "description": "Verifies the headline-like text the deBUNK Android app extracts from the screen. Pipeline: claim extraction (LLM) -> parallel retrieval (fact-checks, news search, trusted RSS, official sources) -> evidence scoring (LLM stance, weighted by credibility tier and recency) -> verdict. Fewer than 2 independent sources always yields UNVERIFIED; missing coverage is never read as false."
+  },
+  "paths": {
+    "/healthz": {
+      "get": {
+        "summary": "Liveness probe",
+        "operationId": "healthz",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "providers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "summary": "Verify the claim(s) in a headline-like text",
+        "operationId": "verify",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verdict (typical latency 2-7 s; hard budget 7 s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid X-API-Key (only when the server has BACKEND_API_KEY set)"
+          },
+          "422": {
+            "description": "Validation error (empty text, text > 600 chars, unsupported lang)"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClaimResult": {
+        "properties": {
+          "claim": {
+            "title": "Claim",
+            "type": "string"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "confidence": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Confidence",
+            "type": "integer"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "developing": {
+            "default": false,
+            "title": "Developing",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "claim",
+          "verdict",
+          "confidence",
+          "summary",
+          "sources"
+        ],
+        "title": "ClaimResult",
+        "type": "object"
+      },
+      "Source": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "stance": {
+            "$ref": "#/components/schemas/Stance"
+          },
+          "credibility_tier": {
+            "description": "1 = wire / official / established fact-checker, 2 = major outlet, 3 = other or unknown",
+            "maximum": 3,
+            "minimum": 1,
+            "title": "Credibility Tier",
+            "type": "integer"
+          },
+          "kind": {
+            "default": "news",
+            "enum": [
+              "fact_check",
+              "news",
+              "official"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "published": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ISO-8601 publication or review date when known",
+            "title": "Published"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Headline or review title, for the details sheet",
+            "title": "Title"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "stance",
+          "credibility_tier"
+        ],
+        "title": "Source",
+        "type": "object"
+      },
+      "Stance": {
+        "enum": [
+          "SUPPORTS",
+          "CONTRADICTS",
+          "NEUTRAL"
+        ],
+        "title": "Stance",
+        "type": "string"
+      },
+      "Verdict": {
+        "enum": [
+          "LIKELY_TRUE",
+          "LIKELY_FALSE",
+          "MISLEADING",
+          "UNVERIFIED"
+        ],
+        "title": "Verdict",
+        "type": "string"
+      },
+      "VerifyRequest": {
+        "properties": {
+          "text": {
+            "description": "The single headline-like text the app extracted. Never a screenshot.",
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "lang": {
+            "default": "en",
+            "enum": [
+              "en",
+              "hi",
+              "mr"
+            ],
+            "title": "Lang",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "VerifyRequest",
+        "type": "object"
+      },
+      "VerifyResponse": {
+        "description": "Top-level fields are the verdict contract from the spec; `claims` carries the per-claim breakdown.",
+        "properties": {
+          "claim": {
+            "description": "The claim the headline verdict is about",
+            "title": "Claim",
+            "type": "string"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "confidence": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Confidence",
+            "type": "integer"
+          },
+          "summary": {
+            "description": "Max 2 lines",
+            "title": "Summary",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "developing": {
+            "default": false,
+            "title": "Developing",
+            "type": "boolean"
+          },
+          "claims": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ClaimResult"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "cached": {
+            "default": false,
+            "title": "Cached",
+            "type": "boolean"
+          },
+          "degraded": {
+            "default": false,
+            "description": "True if a stage failed or fell back (no LLM, source timeout). Confidence is capped when degraded.",
+            "title": "Degraded",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "claim",
+          "verdict",
+          "confidence",
+          "summary",
+          "sources"
+        ],
+        "title": "VerifyResponse",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}

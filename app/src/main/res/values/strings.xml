@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">deBUNK</string>
+    <string name="a11y_description">deBUNK reads only the single line you drop its dot on, then checks that one claim. It does not scan your screen in the background. It never reads password fields or banking and payment apps, and stores no screen content. In chat apps such as WhatsApp it reads only the one message you drop the dot on.</string>
+</resources>
